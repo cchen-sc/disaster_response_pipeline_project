@@ -1,6 +1,10 @@
+##Example of running this script:
+##python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db
+
 import sys
 import pandas as pd
 from sqlalchemy import create_engine
+
 
 def load_data(messages_filepath, categories_filepath):
     '''Read in input csv files'''
@@ -42,7 +46,7 @@ def clean_data(df):
 def save_data(df, database_filename):
     '''Save the cleaned dataset into an sqlite database'''
     engine = create_engine('sqlite:///' + database_filename)
-    df.to_sql(database_filename, engine, index=False)
+    df.to_sql('DisasterResponse', engine, index=False)
 
 
 def main():
