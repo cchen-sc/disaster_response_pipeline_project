@@ -8,7 +8,7 @@ from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import joblib
 from sqlalchemy import create_engine
 
 
@@ -26,11 +26,11 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('DisasterResponse', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
@@ -43,6 +43,11 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    #For Barplot of message categories
+    y = df.drop(['id','message','original','genre'], axis=1)
+    categories = list(y.sum().index)
+    cate_counts = list(y.sum().values)
+
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -61,6 +66,25 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=categories,
+                    y=cate_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message in each category',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category Name",
+                    'tickangle': 30
                 }
             }
         }
@@ -93,7 +117,7 @@ def go():
 
 
 def main():
-    app.run(host='0.0.0.0', port=3001, debug=True)
+    app.run(host='0.0.0.0', port=3002, debug=True)
 
 
 if __name__ == '__main__':
