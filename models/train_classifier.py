@@ -34,6 +34,8 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    '''Uniform and clean the format of the corpus followed by okenization'''
+
     # normalize case and remove punctuation
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower().strip())
     stop_words = stopwords.words("english")
@@ -49,6 +51,7 @@ def tokenize(text):
 
 
 def build_model():
+    '''Build a multiclassfication model using pipeline'''
     #Create a pipeline
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
@@ -67,11 +70,13 @@ def build_model():
 
 
 def evaluate_model(model, X_test, y_test):
+    '''Evaluate the trained model using test data set'''
     y_pred = model.predict(X_test)
     print(classification_report(y_test, y_pred, target_names=y_test.columns.values))
 
 
 def save_model(model, model_filepath):
+    '''Save trained model to .pkl file'''
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
